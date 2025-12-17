@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping()
 public class MyController {
 
     private final LibraryService libraryService;
@@ -18,11 +18,15 @@ public class MyController {
         this.libraryService = libraryService;
     }
 
-    @GetMapping
+    @GetMapping("/books")
     public List<Book> getAll(){
         return libraryService.getAllBooks();
     }
+
+    @GetMapping("/borrow-records")
+    public List<BorrowRecord> getAllBorrowRecords(){
+        return libraryService.getAllBorrowRecords();
     
 
     
-}
+}   }
