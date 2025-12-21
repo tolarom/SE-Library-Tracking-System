@@ -1,11 +1,11 @@
 package project.library.demo;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
 
-
-import java.util.List;
 
 
 @RestController
@@ -25,8 +25,13 @@ public class MyController {
 
     @GetMapping("/borrow-records")
     public List<BorrowRecord> getAllBorrowRecords(){
-        return libraryService.getAllBorrowRecords();
-    
+        return libraryService.getAllBorrowRecords();   
+    }
 
+    @GetMapping("/user")
+    public List<User> getAllUsers() {
+        return libraryService.getAllUsers();
+    }
     
-}   }
+    
+}
