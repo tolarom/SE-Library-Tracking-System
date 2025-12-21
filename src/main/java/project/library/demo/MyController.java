@@ -1,15 +1,15 @@
 package project.library.demo;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
 
-
-import java.util.List;
 
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping()
 public class MyController {
 
     private final LibraryService libraryService;
@@ -18,11 +18,20 @@ public class MyController {
         this.libraryService = libraryService;
     }
 
-    @GetMapping
+    @GetMapping("/books")
     public List<Book> getAll(){
         return libraryService.getAllBooks();
     }
-    
 
+    @GetMapping("/borrow-records")
+    public List<BorrowRecord> getAllBorrowRecords(){
+        return libraryService.getAllBorrowRecords();   
+    }
+
+    @GetMapping("/user")
+    public List<User> getAllUsers() {
+        return libraryService.getAllUsers();
+    }
+    
     
 }
