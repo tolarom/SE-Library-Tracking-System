@@ -66,8 +66,8 @@ Thumbs.db
 
 # Environment & secrets
 .env
-application-local.properties
-application-local.yml
+application.properties
+application.yml
 
 # Local databases
 *.db
