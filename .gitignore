@@ -35,3 +35,27 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+*~
+
+# Environment & secrets
+.env
+application-local.properties
+application-local.yml
+
+# Local databases
+*.db
+*.mv.db
+*.trace.db
