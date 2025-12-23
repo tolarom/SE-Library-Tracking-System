@@ -3,24 +3,28 @@ package project.library.demo;
 import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-//import jakarta.persistence.Table;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 
 @Entity
-//@Table(name = "borrow_records")
+@Table(name = "borrow_record")
 public class BorrowRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
+    @Column(name = "returned_at")
     private Timestamp returnAt;
+    @Column(name = "book_id")
     private String bookId;
+    @Column(name = "user_id")
     private String userId;
+    @Column(name = "borrowed_at")
     private Timestamp borrowAt;
+    @Column(name = "due_date")
     private Timestamp dueDate;
     private String status;
+    @Column(name = "is_overdue")
     private boolean overdue;
 
     // Constructors
@@ -38,7 +42,8 @@ public class BorrowRecord {
     }
 
     // Getters & Setters
-    public Long getId() { return id; }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String getBookId() { return bookId; }
     public void setBookId(String bookId) { this.bookId = bookId; }
