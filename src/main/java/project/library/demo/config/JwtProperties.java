@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.config;
 
 
 import org.springframework.boot.context.properties.ConfigurationProperties;

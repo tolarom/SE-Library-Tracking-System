@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.config;
 
 import java.util.Date;
 

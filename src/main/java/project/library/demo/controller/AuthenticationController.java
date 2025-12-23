@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

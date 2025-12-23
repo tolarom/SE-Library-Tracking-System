@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
-
+import project.library.demo.authorize.LoginRequest;
+import project.library.demo.entity.Book;
+import project.library.demo.entity.BorrowRecord;
+import project.library.demo.entity.User;
+import project.library.demo.repo.UserRepository;
+import project.library.demo.service.LibraryService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller

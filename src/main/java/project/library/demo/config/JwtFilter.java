@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +13,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import project.library.demo.service.CustomUserDetailsService;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter{

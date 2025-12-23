@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.authorize;
 
 import jakarta.validation.constraints.NotBlank;
 

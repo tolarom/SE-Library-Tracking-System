@@ -1,7 +1,14 @@
-package project.library.demo;
+package project.library.demo.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import project.library.demo.entity.Book;
+import project.library.demo.entity.BorrowRecord;
+import project.library.demo.entity.User;
+import project.library.demo.repo.BorrowRepository;
+import project.library.demo.repo.LibraryRepository;
+import project.library.demo.repo.UserRepository;
 
 @Service
 public class LibraryService {

@@ -1,6 +1,8 @@
-package project.library.demo;
+package project.library.demo.repo;
 
 import java.util.Optional;
+
+import project.library.demo.entity.User;
 
 public interface UserRepository extends org.springframework.data.jpa.repository.JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);

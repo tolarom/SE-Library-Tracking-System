@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import project.library.demo.service.CustomUserDetailsService;
 
 import java.security.SecureRandom;
 import java.util.List;

@@ -1,4 +1,4 @@
-package project.library.demo;
+package project.library.demo.authorize;
 
 public class LoginResponse {
     private String username;
