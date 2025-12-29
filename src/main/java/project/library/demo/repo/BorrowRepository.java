@@ -6,6 +6,6 @@ import project.library.demo.entity.BorrowRecord;
 
 
 @Repository
-public interface BorrowRepository extends JpaRepository<BorrowRecord, Long> {
+public interface BorrowRepository extends JpaRepository<BorrowRecord, String>{
     
 }

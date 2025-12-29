@@ -1,5 +1,8 @@
 package project.library.demo.config;
 
+import java.security.SecureRandom;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import project.library.demo.service.CustomUserDetailsService;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 @Configuration
@@ -57,49 +61,17 @@ public class SecurityConfig {
         return source;
     }
 
-  @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-    http
-        .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-        .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        )
-
-        .authenticationProvider(authenticationProvider())
-
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/login", "/login**", "/doLogin",
-                "/register", "/api/login", "/api/register",
-                "/error", "/favicon.ico"
-            ).permitAll()
-
-            .requestMatchers(
-                "/css/**", "/js/**", "/images/**", "/fonts/**",
-                "/static/**", "/resources/**", "/webjars/**", "/assets/**"
-            ).permitAll()
-
-            .anyRequest().authenticated()
-        )
-
-        .formLogin(form -> form
-            .loginPage("/login")
-            .loginProcessingUrl("/doLogin")
-            .defaultSuccessUrl("/dashboard", true)
-            .failureUrl("/login?error=true")
-            .permitAll()
-        )
-
-        .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/login?logout=true")
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
-            .permitAll()
-        );
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(securityCorsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/login", "/api/register", "/login", "/register").permitAll()
+                .requestMatchers("/products").authenticated()
+                .anyRequest().authenticated()
+            );
 
     return http.build();
     }
