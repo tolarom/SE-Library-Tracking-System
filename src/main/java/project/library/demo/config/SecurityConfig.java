@@ -11,13 +11,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import project.library.demo.service.CustomUserDetailsService;
 
-import java.security.SecureRandom;
 import java.util.List;
 
 @Configuration
@@ -28,13 +28,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        SecureRandom secureRandom;
-        try {
-            secureRandom = SecureRandom.getInstanceStrong();
-        } catch (Exception e) {
-            secureRandom = new SecureRandom();
-        }
-        return new BCryptPasswordEncoder(12, secureRandom);
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -51,30 +45,62 @@ public class SecurityConfig {
     }
 
     @Bean
-public CorsConfigurationSource securityCorsConfigurationSource() {  // Renamed!
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("*"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(securityCorsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login", "/api/register", "/login", "/register").permitAll()
-                .requestMatchers("/products").authenticated()
-                .anyRequest().authenticated()
-            );
+  @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.build();
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+        .sessionManagement(session ->
+            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        )
+
+        .authenticationProvider(authenticationProvider())
+
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/login", "/login**", "/doLogin",
+                "/register", "/api/login", "/api/register",
+                "/error", "/favicon.ico"
+            ).permitAll()
+
+            .requestMatchers(
+                "/css/**", "/js/**", "/images/**", "/fonts/**",
+                "/static/**", "/resources/**", "/webjars/**", "/assets/**"
+            ).permitAll()
+
+            .anyRequest().authenticated()
+        )
+
+        .formLogin(form -> form
+            .loginPage("/login")
+            .loginProcessingUrl("/doLogin")
+            .defaultSuccessUrl("/dashboard", true)
+            .failureUrl("/login?error=true")
+            .permitAll()
+        )
+
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/login?logout=true")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID")
+            .permitAll()
+        );
+
+    return http.build();
     }
 }
