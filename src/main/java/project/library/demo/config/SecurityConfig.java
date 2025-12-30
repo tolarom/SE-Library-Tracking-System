@@ -1,5 +1,8 @@
 package project.library.demo.config;
 
+import java.security.SecureRandom;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +19,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import project.library.demo.service.CustomUserDetailsService;
-
-import java.security.SecureRandom;
-import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -72,6 +72,7 @@ public CorsConfigurationSource securityCorsConfigurationSource() {  // Renamed!
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/login", "/api/register", "/login", "/register").permitAll()
                 .requestMatchers("/products").authenticated()
+                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );
 
