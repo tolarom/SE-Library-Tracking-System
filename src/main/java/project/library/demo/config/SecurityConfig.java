@@ -14,11 +14,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import project.library.demo.service.CustomUserDetailsService;
+
+import java.security.SecureRandom;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -28,13 +32,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        SecureRandom secureRandom;
-        try {
-            secureRandom = SecureRandom.getInstanceStrong();
-        } catch (Exception e) {
-            secureRandom = new SecureRandom();
-        }
-        return new BCryptPasswordEncoder(12, secureRandom);
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -51,17 +49,17 @@ public class SecurityConfig {
     }
 
     @Bean
-public CorsConfigurationSource securityCorsConfigurationSource() {  // Renamed!
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("*"));
-    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.setAllowCredentials(true);
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -72,10 +70,9 @@ public CorsConfigurationSource securityCorsConfigurationSource() {  // Renamed!
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/login", "/api/register", "/login", "/register").permitAll()
                 .requestMatchers("/products").authenticated()
-                .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );
 
-        return http.build();
+    return http.build();
     }
 }
