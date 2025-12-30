@@ -3,6 +3,8 @@ package project.library.demo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -11,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -57,50 +58,77 @@ public class SecurityConfig {
         return source;
     }
 
-  @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    // NEW: Role Hierarchy - LIBRARIAN inherits all MEMBER permissions
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_LIBRARIAN > ROLE_MEMBER\nROLE_MEMBER > ROLE_ANONYMOUS");
+        return hierarchy;
+    }
 
-    http
-        .csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        .sessionManagement(session ->
-            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        )
+        http
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-        .authenticationProvider(authenticationProvider())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+            )
 
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/login", "/login**", "/doLogin",
-                "/register", "/api/login", "/api/register",
-                "/error", "/favicon.ico"
-            ).permitAll()
+            .authenticationProvider(authenticationProvider())
 
-            .requestMatchers(
-                "/css/**", "/js/**", "/images/**", "/fonts/**",
-                "/static/**", "/resources/**", "/webjars/**", "/assets/**"
-            ).permitAll()
+            .authorizeHttpRequests(auth -> auth
+                // Public endpoints
+                .requestMatchers(
+                    "/login", "/login**", "/doLogin",
+                    "/register", "/api/login", "/api/register",
+                    "/error", "/favicon.ico"
+                ).permitAll()
 
-            .anyRequest().authenticated()
-        )
+                // Static resources
+                .requestMatchers(
+                    "/css/**", "/js/**", "/images/**", "/fonts/**",
+                    "/static/**", "/resources/**", "/webjars/**", "/assets/**"
+                ).permitAll()
 
-        .formLogin(form -> form
-            .loginPage("/login")
-            .loginProcessingUrl("/doLogin")
-            .defaultSuccessUrl("/dashboard", true)
-            .failureUrl("/login?error=true")
-            .permitAll()
-        )
+                // === ROLE-BASED ACCESS CONTROL ===
 
-        .logout(logout -> logout
-            .logoutUrl("/logout")
-            .logoutSuccessUrl("/login?logout=true")
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
-            .permitAll()
-        );
+                // Librarian-only endpoints (admin features)
+                .requestMatchers(
+                    "/admin/**",
+                    "/books/new", "/books/create", "/books/edit/**", "/books/update/**", "/books/delete/**",
+                    "/users/**", "/overdue", "/loans/all"
+                ).hasRole("LIBRARIAN")
 
-    return http.build();
+                // Member-accessible endpoints (Librarians can access these too thanks to hierarchy)
+                .requestMatchers(
+                    "/dashboard", "/member/**",
+                    "/books", "/books/**",
+                    "/borrow/**", "/return/**", "/myloans", "/profile"
+                ).hasRole("MEMBER")
+
+                // Any other request requires authentication
+                .anyRequest().authenticated()
+            )
+
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/doLogin")
+                .defaultSuccessUrl("/dashboard", true)
+                .failureUrl("/login?error=true")
+                .permitAll()
+            )
+
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll()
+            );
+
+        return http.build();
     }
 }

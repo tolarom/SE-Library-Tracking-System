@@ -33,14 +33,13 @@ public class PageController {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Model model, Authentication authentication) {
-        if (authentication != null) {
-            String username = authentication.getName();
-            userRepository.findByUsername(username).ifPresent(user -> model.addAttribute("user", user));
-        }
-        model.addAttribute("books", libraryService.getAllBooks());
-        return "dashboard";
-    }
+public String dashboard(Model model) {
+    model.addAttribute("title", "Dashboard");
+    model.addAttribute("content", "fragments/home :: content");
+    return "dashboard";
+}
+
+
 
     @GetMapping("/products")
     public String products() {
