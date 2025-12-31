@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -12,13 +14,14 @@ import jakarta.persistence.Table;
 public class BorrowRecord {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(name = "returned_at")
     private Timestamp returnAt;
     @Column(name = "book_id")
-    private String bookId;
+    private Long bookId;
     @Column(name = "user_id")
-    private String userId;
+    private Long userId;
     @Column(name = "borrowed_at")
     private Timestamp borrowAt;
     @Column(name = "due_date")
@@ -29,7 +32,9 @@ public class BorrowRecord {
 
     public BorrowRecord() {}
 
-    public BorrowRecord(String bookId, String userId, Timestamp borrowAt, Timestamp dueDate, String status, boolean overdue) {
+    public BorrowRecord(String bookId, String userId,
+                        Timestamp borrowAt, Timestamp dueDate,
+                        String status, boolean overdue) {
         this.bookId = bookId;
         this.userId = userId;
         this.borrowAt = borrowAt;
@@ -41,10 +46,13 @@ public class BorrowRecord {
     // Getters & Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
     public String getBookId() { return bookId; }
     public void setBookId(String bookId) { this.bookId = bookId; }
+
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+
     public Timestamp getBorrowAt() { return borrowAt; }
     public void setBorrowAt(Timestamp borrowAt) { this.borrowAt = borrowAt; }
     public Timestamp getReturnAt() { return returnAt; }

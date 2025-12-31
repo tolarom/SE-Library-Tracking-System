@@ -1,0 +1,2 @@
+INSERT INTO role (name) VALUES ('MEMBER');
+INSERT INTO role (name) VALUES ('LIBRARIAN');

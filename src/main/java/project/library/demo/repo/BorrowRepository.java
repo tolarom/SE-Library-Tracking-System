@@ -1,11 +1,15 @@
 package project.library.demo.repo;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import project.library.demo.entity.BorrowRecord;
 
+import java.sql.Timestamp;
+import java.util.List;
 
 @Repository
-public interface BorrowRepository extends JpaRepository<BorrowRecord, String>{
+public interface BorrowRepository extends JpaRepository<BorrowRecord, Long> {
     
 }

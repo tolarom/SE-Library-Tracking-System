@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -14,11 +16,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import project.library.demo.controller.CustomLoginSuccessHandler;
 import project.library.demo.service.CustomUserDetailsService;
 
 import java.security.SecureRandom;
@@ -26,9 +28,15 @@ import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
+                          CustomLoginSuccessHandler customLoginSuccessHandler) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.customLoginSuccessHandler = customLoginSuccessHandler;
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,6 +49,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(customUserDetailsService);
@@ -61,18 +70,51 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(securityCorsConfigurationSource()))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/login", "/api/register", "/login", "/register").permitAll()
-                .requestMatchers("/products").authenticated()
-                .anyRequest().authenticated()
-            );
+  @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+        .sessionManagement(session ->
+            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        )
+
+        .authenticationProvider(authenticationProvider())
+
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/login", "/login**", "/doLogin",
+                "/register", "/api/login", "/api/register",
+                "/error", "/favicon.ico"
+            ).permitAll()
+
+            .requestMatchers(
+                "/css/**", "/js/**", "/images/**", "/fonts/**",
+                "/static/**", "/resources/**", "/webjars/**", "/assets/**"
+            ).permitAll()
+
+            .anyRequest().authenticated()
+        )
+
+        .formLogin(form -> form
+            .loginPage("/login")
+            .loginProcessingUrl("/doLogin")
+            .defaultSuccessUrl("/dashboard", true)
+            .failureUrl("/login?error=true")
+            .permitAll()
+        )
+
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/login?logout=true")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID")
+            .permitAll()
+        );
 
     return http.build();
-    }
+}
+
 }
