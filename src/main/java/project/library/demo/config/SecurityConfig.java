@@ -17,15 +17,22 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import project.library.demo.controller.CustomLoginSuccessHandler;
 import project.library.demo.service.CustomUserDetailsService;
 
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
+    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomLoginSuccessHandler customLoginSuccessHandler;
 
-    @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService,
+                          CustomLoginSuccessHandler customLoginSuccessHandler) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.customLoginSuccessHandler = customLoginSuccessHandler;
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,6 +45,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @SuppressWarnings("deprecation")
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(customUserDetailsService);
@@ -60,75 +68,73 @@ public class SecurityConfig {
 
     // NEW: Role Hierarchy - LIBRARIAN inherits all MEMBER permissions
     @Bean
+    @SuppressWarnings("deprecation")
     public RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
         hierarchy.setHierarchy("ROLE_LIBRARIAN > ROLE_MEMBER\nROLE_MEMBER > ROLE_ANONYMOUS");
         return hierarchy;
     }
+    
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+   @Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    
 
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+    http
+        .csrf(csrf -> csrf.disable())
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
+        .sessionManagement(session ->
+            session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        )
 
-            .authenticationProvider(authenticationProvider())
+        .authenticationProvider(authenticationProvider())
 
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers(
-                    "/login", "/login**", "/doLogin",
-                    "/register", "/api/login", "/api/register",
-                    "/error", "/favicon.ico"
-                ).permitAll()
+        .authorizeHttpRequests(auth -> auth
+            // Public endpoints
+            .requestMatchers(
+                "/login", "/login**", "/doLogin",
+                "/register", "/api/login", "/api/register",
+                "/error", "/favicon.ico"
+            ).permitAll()
 
-                // Static resources
-                .requestMatchers(
-                    "/css/**", "/js/**", "/images/**", "/fonts/**",
-                    "/static/**", "/resources/**", "/webjars/**", "/assets/**"
-                ).permitAll()
+            // Static resources
+            .requestMatchers(
+                "/css/**", "/js/**", "/images/**", "/fonts/**",
+                "/static/**", "/resources/**", "/webjars/**", "/assets/**"
+            ).permitAll()
 
-                // === ROLE-BASED ACCESS CONTROL ===
+            // Librarian-only endpoints
+            .requestMatchers("/admin/**").hasRole("LIBRARIAN")
 
-                // Librarian-only endpoints (admin features)
-                .requestMatchers(
-                    "/admin/**",
-                    "/books/new", "/books/create", "/books/edit/**", "/books/update/**", "/books/delete/**",
-                    "/users/**", "/overdue", "/loans/all"
-                ).hasRole("LIBRARIAN")
+            // Member-accessible endpoints
+            .requestMatchers(
+                "/member/dashboard", "/member/**",
+                "/books",
+                "/borrow/**", "/return/**", "/myloans", "/profile"
+            ).hasRole("MEMBER")
 
-                // Member-accessible endpoints (Librarians can access these too thanks to hierarchy)
-                .requestMatchers(
-                    "/dashboard", "/member/**",
-                    "/books", "/books/**",
-                    "/borrow/**", "/return/**", "/myloans", "/profile"
-                ).hasRole("MEMBER")
+            // Any other request requires authentication
+            .anyRequest().authenticated()
+        )
 
-                // Any other request requires authentication
-                .anyRequest().authenticated()
-            )
+        .formLogin(form -> form
+            .loginPage("/login")
+            .loginProcessingUrl("/doLogin")
+            .successHandler(customLoginSuccessHandler) // custom redirect based on role
+            .failureUrl("/login?error=true")
+            .permitAll()
+        )
 
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/doLogin")
-                .defaultSuccessUrl("/dashboard", true)
-                .failureUrl("/login?error=true")
-                .permitAll()
-            )
+        .logout(logout -> logout
+            .logoutUrl("/logout")
+            .logoutSuccessUrl("/login?logout=true")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID")
+            .permitAll()
+        );
 
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            );
+    return http.build();
+}
 
-        return http.build();
-    }
 }

@@ -18,16 +18,22 @@ public class Book {
 
     private String publisher;
 
-    @Column(name = "total_copies")          // ← Matches DB column
+    @Column(name = "total_copies")
     private int totalCopies;
 
-    @Column(name = "available_copies")      // ← Matches DB column
+    @Column(name = "available_copies")
     private int availableCopies;
 
+    // NEW: Book cover image path (URL/path stored in DB)
+    @Column(name = "cover_image", length = 500)
+    private String coverImage;
+
+ 
     // ================= Constructors =================
     public Book() {}
 
-    public Book(String title, String author, String isbn, String publisher, int totalCopies, int availableCopies) {
+    public Book(String title, String author, String isbn, String publisher,
+                int totalCopies, int availableCopies) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -37,59 +43,43 @@ public class Book {
     }
 
     // ================= Getters & Setters =================
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
 
-    public String getIsbn() {
-        return isbn;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
+    public String getAuthor() { return author; }
+    public void setAuthor(String author) { this.author = author; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getPublisher() { return publisher; }
+    public void setPublisher(String publisher) { this.publisher = publisher; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public int getTotalCopies() { return totalCopies; }
+    public void setTotalCopies(int totalCopies) { this.totalCopies = totalCopies; }
 
-    public String getAuthor() {
-        return author;
-    }
+    public int getAvailableCopies() { return availableCopies; }
+    public void setAvailableCopies(int availableCopies) { this.availableCopies = availableCopies; }
 
-    public void setAuthor(String author) {
-        this.author = author;
-    }
+    // File path getters/setters
+    public String getCoverImage() { return coverImage; }
+    public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
 
-    public String getPublisher() {
-        return publisher;
-    }
 
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
-    }
-
-    public int getTotalCopies() {
-        return totalCopies;
-    }
-
-    public void setTotalCopies(int totalCopies) {
-        this.totalCopies = totalCopies;
-    }
-
-    public int getAvailableCopies() {
-        return availableCopies;
-    }
-
-    public void setAvailableCopies(int availableCopies) {
-        this.availableCopies = availableCopies;
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", isbn='" + isbn + '\'' +
+                ", totalCopies=" + totalCopies +
+                ", availableCopies=" + availableCopies +
+                ", coverImage='" + coverImage + '\'' +
+                
+                '}';
     }
 }

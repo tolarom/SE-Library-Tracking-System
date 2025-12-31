@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Borrowing History</title>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">My Borrowing History</h1>
+
+        <div th:if="${history.isEmpty()}">
+            <div class="alert alert-info">
+                You haven't borrowed any books yet.
+            </div>
+        </div>
+
+        <div th:if="${!history.isEmpty()}">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Borrowed On</th>
+                        <th>Due Date</th>
+                        <th>Returned On</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="borrow : ${history}">
+                        <td th:text="${bookService.getBookById(borrow.bookId).title}">Title</td>
+                        <td th:text="${bookService.getBookById(borrow.bookId).author}">Author</td>
+                        <td th:text="${#temporals.format(borrow.borrowAt.toLocalDateTime(), 'MMM dd, yyyy')}">Borrowed</td>
+                        <td th:text="${#temporals.format(borrow.dueDate.toLocalDateTime(), 'MMM dd, yyyy')}">Due</td>
+                        <td>
+                            <span th:if="${borrow.returnAt != null}"
+                                  th:text="${#temporals.format(borrow.returnAt.toLocalDateTime(), 'MMM dd, yyyy')}">
+                                Returned
+                            </span>
+                            <span th:if="${borrow.returnAt == null}" class="text-muted">Not returned yet</span>
+                        </td>
+                        <td>
+                            <span class="badge"
+                                  th:classappend="${borrow.returnAt == null ? 'bg-primary' : 
+                                                   (borrow.overdue ? 'bg-danger' : 'bg-success')}"
+                                  th:text="${borrow.returnAt == null ? 'Currently Borrowed' : 
+                                             (borrow.overdue ? 'Returned Overdue' : 'Returned On Time')}">
+                                Status
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <a th:href="@{/member/dashboard}" class="btn btn-secondary mt-4">← Back to Dashboard</a>
+    </div>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

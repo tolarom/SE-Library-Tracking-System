@@ -1,48 +1,44 @@
 package project.library.demo.controller;
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 
-import project.library.demo.repo.UserRepository;
-import project.library.demo.service.LibraryService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class PageController {
 
-    private final LibraryService libraryService;
-    private final UserRepository userRepository;
-
-    public PageController(LibraryService libraryService, UserRepository userRepository) {
-        this.libraryService = libraryService;
-        this.userRepository = userRepository;
-    }
-
     @GetMapping("/")
-    public String home() {
-        return "redirect:/dashboard";
+    public String home(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/redirect-dashboard";
+        }
+        return "redirect:/login"; 
     }
 
     @GetMapping("/login")
     public String login() {
-        return "login"; 
+        return "login";
     }
+
     @GetMapping("/register")
     public String register() {
-        return "register"; 
+        return "register";
     }
 
-    @GetMapping("/dashboard")
-public String dashboard(Model model) {
-    model.addAttribute("title", "Dashboard");
-    model.addAttribute("content", "fragments/home :: content");
-    return "dashboard";
-}
+    /**
+     * Redirects users to the appropriate dashboard based on their role
+     */
+    @GetMapping("/redirect-dashboard")
+    public String redirectToDashboard(Authentication authentication) {
+        boolean isLibrarian = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(auth -> auth.equals("ROLE_LIBRARIAN"));
 
-
-
-    @GetMapping("/products")
-    public String products() {
-        return "products";
+        if (isLibrarian) {
+            return "redirect:/dashboard";          // Librarian gets full admin dashboard
+        } else {
+            return "redirect:/member/home";   // Regular member portal
+        }
     }
 }
