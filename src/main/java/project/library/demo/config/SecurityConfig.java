@@ -1,8 +1,5 @@
 package project.library.demo.config;
 
-import java.security.SecureRandom;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +20,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import project.library.demo.controller.CustomLoginSuccessHandler;
 import project.library.demo.service.CustomUserDetailsService;
 
-import java.security.SecureRandom;
 import java.util.List;
 
 @Configuration
@@ -70,8 +66,19 @@ public class SecurityConfig {
         return source;
     }
 
-  @Bean
+    // NEW: Role Hierarchy - LIBRARIAN inherits all MEMBER permissions
+    @Bean
+    @SuppressWarnings("deprecation")
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl hierarchy = new RoleHierarchyImpl();
+        hierarchy.setHierarchy("ROLE_LIBRARIAN > ROLE_MEMBER\nROLE_MEMBER > ROLE_ANONYMOUS");
+        return hierarchy;
+    }
+    
+
+   @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    
 
     http
         .csrf(csrf -> csrf.disable())
@@ -84,12 +91,14 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .authenticationProvider(authenticationProvider())
 
         .authorizeHttpRequests(auth -> auth
+            // Public endpoints
             .requestMatchers(
                 "/login", "/login**", "/doLogin",
                 "/register", "/api/login", "/api/register",
                 "/error", "/favicon.ico"
             ).permitAll()
 
+            // Static resources
             .requestMatchers(
                 "/css/**", "/js/**", "/images/**", "/fonts/**",
                 "/static/**", "/resources/**", "/webjars/**", "/assets/**"
@@ -100,7 +109,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
             // Member-accessible endpoints
             .requestMatchers(
-                "/member/dashboard", "/member/**",
+                "/member/**",
                 "/books",
                 "/borrow/**", "/return/**", "/myloans", "/profile"
             ).hasRole("MEMBER")
@@ -112,7 +121,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
         .formLogin(form -> form
             .loginPage("/login")
             .loginProcessingUrl("/doLogin")
-            .defaultSuccessUrl("/dashboard", true)
+            .successHandler(customLoginSuccessHandler) // custom redirect based on role
             .failureUrl("/login?error=true")
             .permitAll()
         )

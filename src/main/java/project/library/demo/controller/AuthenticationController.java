@@ -1,6 +1,14 @@
 package project.library.demo.controller;
 
 import jakarta.validation.Valid;
+import project.library.demo.authorize.AuthResponse;
+import project.library.demo.authorize.LoginRequest;
+import project.library.demo.authorize.LoginResponse;
+import project.library.demo.authorize.RegisterRequest;
+import project.library.demo.config.JwtUtil;
+import project.library.demo.entity.User;
+import project.library.demo.repo.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import jakarta.validation.Valid;
-import project.library.demo.authorize.AuthResponse;
-import project.library.demo.authorize.LoginRequest;
-import project.library.demo.authorize.LoginResponse;
-import project.library.demo.authorize.RegisterRequest;
-import project.library.demo.config.JwtUtil;
-import project.library.demo.entity.User;
-import project.library.demo.repo.UserRepository;
-
 
 @RestController
 public class AuthenticationController {

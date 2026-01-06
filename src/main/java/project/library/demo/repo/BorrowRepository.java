@@ -13,28 +13,17 @@ import java.util.List;
 @Repository
 public interface BorrowRepository extends JpaRepository<BorrowRecord, Long> {
 
-    // Total active borrows (not returned)
-    long countByReturnAtIsNull();
-
-    // Total overdue loans (not returned AND past due date)
-    @Query("SELECT COUNT(b) FROM BorrowRecord b " +
-           "WHERE b.returnAt IS NULL AND b.dueDate < :today")
-    long countOverdueLoans(@Param("today") Timestamp today);
-
-    // Active borrows for a specific user
+    // Member-specific
     List<BorrowRecord> findByUserIdAndReturnAtIsNull(Long userId);
-
-    // Count active borrows for a specific user
-    long countByUserIdAndReturnAtIsNull(Long userId);
-
-    // All borrowing records for a user, newest first
     List<BorrowRecord> findByUserIdOrderByBorrowAtDesc(Long userId);
 
-    // Overdue borrows for a specific user
-    @Query("SELECT b FROM BorrowRecord b " +
-           "WHERE b.userId = :userId " +
-           "AND b.returnAt IS NULL " +
-           "AND b.dueDate < :today")
-    List<BorrowRecord> findOverdueByUserId(@Param("userId") Long userId,
-                                          @Param("today") Timestamp today);
+    // Dashboard stats
+    long countByReturnAtIsNull(); // Active borrows
+
+    long countByReturnAtIsNullAndDueDateBefore(LocalDate now); // Overdue
+
+    long countByBorrowAtAfter(LocalDateTime startOfMonth); // Borrows this month
+
+    // Optional: overdue list for admin view
+    List<BorrowRecord> findAllByReturnAtIsNullAndDueDateBefore(LocalDate now);
 }
