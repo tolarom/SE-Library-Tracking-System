@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,120 +8,208 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .book-card { transition: all 0.3s; border: none; border-radius: 12px; overflow: hidden; }
-        .book-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
-        .book-cover { height: 300px; object-fit: cover; }
-        .overdue-alert { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+        .book-card { 
+            transition: all 0.3s ease; 
+            border: none; 
+            border-radius: 16px; 
+            overflow: hidden; 
+            height: 300px;
+            width: 200px;
+        }
+        .book-cover { 
+            height: 160px;          /* Reduced slightly for better mobile fit */
+            object-fit: cover; 
+            width: 100%;
+        }
+        .overdue-alert { 
+            background: linear-gradient(135deg, #dc3545, #bd2130); 
+            color: white; 
+            border-radius: 20px; 
+            padding: 1.5rem;
+        }
+        .btn-borrow {
+            background: #0d6efd;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-borrow:hover {
+            background: #0b5ed7;
+            transform: scale(1.05);
+        }
+        .badge-available {
+            font-size: 0.95rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .book-cover {
+                height: 240px;
+            }
+            h1.display-5 {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .book-cover {
+                height: 200px;
+            }
+        }
     </style>
 </head>
 <body class="bg-light">
 <div class="d-flex min-vh-100">
 
-    <!-- Member Sidebar -->
-    <aside class="bg-white shadow-sm d-flex flex-column" style="width: 260px;">
-        <div class="p-4 text-center">
-            <h4 class="fw-bold text-primary">Readly</h4>
-            <hr>
-            <img src="https://via.placeholder.com/80" class="rounded-circle mb-3" alt="Profile">
-            <h6 sec:authentication="name">Member Name</h6>
-        </div>
-        <nav class="nav flex-column px-3">
-            <a class="nav-link active fw-medium" th:href="@{/member/dashboard}">
-                <i class="fas fa-home me-2"></i> My Dashboard
-            </a>
-            <a class="nav-link" th:href="@{/member/books/browse}">
-                <i class="fas fa-search me-2"></i> Browse Books
-            </a>
-            <a class="nav-link" th:href="@{/member/borrows/current}">
-                <i class="fas fa-book-reader me-2"></i> My Borrowed Books
-            </a>
-            <a class="nav-link" th:href="@{/member/borrows/history}">
-                <i class="fas fa-history me-2"></i> Borrowing History
-            </a>
-        </nav>
-        <div class="mt-auto p-4 border-top">
-            <a class="nav-link text-danger" th:href="@{/logout}">
-                <i class="fas fa-sign-out-alt me-2"></i> Logout
-            </a>
-        </div>
-    </aside>
+    <!-- Reusable Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
     <!-- Main Content -->
-    <main class="flex-grow-1 overflow-auto">
-        <div class="container py-5">
+    <main class="flex-grow-1 overflow-auto bg-light">
+        <div class="container py-4 py-md-5">
 
             <!-- Overdue Alert -->
-            <div th:if="${overdueCount > 0}" class="overdue-alert rounded-4 p-4 mb-4 text-white">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h4 class="mb-1">You have <strong th:text="${overdueCount}">2</strong> overdue book(s)!</h4>
-                        <p class="mb-0">Please return them soon to avoid fines.</p>
+            <div th:if="${overdueCount > 0}" class="overdue-alert shadow-lg mb-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="mb-1">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            You have <strong th:text="${overdueCount}">0</strong> overdue book(s)!
+                        </h3>
+                        <p class="mb-0 opacity-90">Please return them as soon as possible.</p>
                     </div>
-                    <a th:href="@{/member/borrows/current}" class="btn btn-light">View Now →</a>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a th:href="@{/member/borrows/current}" class="btn btn-light btn-lg px-5">
+                            View Details →
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- Welcome -->
-            <h2 class="mb-4">Welcome back, <span sec:authentication="name">Member</span>!</h2>
+            <div class="mb-5">
+                <h1 class="display-5 fw-bold text-primary">
+                    Welcome back, <span sec:authentication="name">Member</span>!
+                </h1>
+                <p class="lead text-muted">Explore your borrowed books and discover new ones</p>
+            </div>
 
             <!-- Currently Borrowed -->
-            <h4 class="mb-3">Currently Borrowed Books</h4>
-            <div class="row g-4 mb-5">
-                <div class="col-md-4" th:each="borrow : ${currentBorrows}">
-                    <div class="card book-card shadow-sm">
-                        <img th:src="@{'/uploads/' + ${borrow.book.coverImage}}" class="book-cover" alt="Cover">
-                        <div class="card-body">
-                            <h5 th:text="${borrow.book.title}">The Great Gatsby</h5>
-                            <p class="text-muted small" th:text="${borrow.book.author}">F. Scott Fitzgerald</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small th:text="${'Due: ' + #dates.format(borrow.dueDate, 'MMM dd, yyyy')}">Due: Jan 15</small>
-                                <span class="badge bg-danger" th:if="${borrow.overdue}">Overdue</span>
-                            </div>
-                            <a th:href="@{|/member/borrows/return/${borrow.id}|}" 
-                               class="btn btn-outline-danger btn-sm mt-3 w-100">
-                                Return Book
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="text-center py-5" th:if="${currentBorrows == null or currentBorrows.isEmpty()}">
-                    <p class="text-muted">You haven't borrowed any books yet.</p>
-                    <a th:href="@{/member/books/browse}" class="btn btn-primary">Browse Books →</a>
-                </div>
-            </div>
+            <section class="mb-5">
+                <h3 class="mb-4 fw-bold">Currently Borrowed Books</h3>
 
-            <!-- Browse Popular Books -->
-            <h4 class="mb-3">Popular Books Available Now</h4>
-            <div class="row g-4">
-                <div class="col-md-3 col-sm-6" th:each="book : ${popularBooks}">
-                    <div class="card book-card text-center shadow-sm">
-                        <img th:src="@{'/uploads/' + ${book.coverImage}}" class="book-cover" alt="Cover">
-                        <div class="card-body py-3">
-                            <h6 class="mb-1" th:text="${book.title}">Educated</h6>
-                            <small class="text-muted" th:text="${book.author}">Tara Westover</small>
-                            <div class="mt-2">
-                                <span class="badge bg-success" th:text="${book.availableCopies + ' left'}">3 left</span>
+                <!-- Borrowed Books Grid -->
+                <div class="row g-4" th:if="${currentBorrows != null and !currentBorrows.isEmpty()}">
+                    <!-- Responsive columns: 1 on mobile, 2 on tablet, 3 on desktop -->
+                    <div class="col-12 col-sm-6 col-lg-4" th:each="borrow : ${currentBorrows}">
+                        <div class="card book-card">
+                            <img th:src="@{'/uploads/' + ${borrow.coverImage}}"
+                                 th:alt="${borrow.bookTitle}"
+                                 class="book-cover"
+                                 onerror="this.src='https://via.placeholder.com/400x600?text=No+Cover'">
+
+                            <div class="card-body d-flex flex-column p-4">
+                                <h5 class="card-title mb-3" th:text="${borrow.bookTitle}">Book Title</h5>
+
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <small class="text-muted">
+                                            Due: 
+                                            <strong th:text="${#dates.format(borrow.dueDate, 'dd MMM yyyy')}">
+                                                15 Jan 2026
+                                            </strong>
+                                        </small>
+                                        <span class="badge bg-danger fs-6 px-3 py-2" 
+                                              th:if="${borrow.overdue}">
+                                            OVERDUE
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                            <button class="btn btn-primary btn-sm mt-3 w-100"
-                                    th:disabled="${book.availableCopies == 0}"
-                                    th:onclick="'borrowBook(' + ${book.id} + ')'">
-                                Borrow Now
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Empty State -->
+                <div class="text-center py-5 bg-white rounded-4 shadow-sm" 
+                     th:if="${currentBorrows == null or currentBorrows.isEmpty()}">
+                    <i class="fas fa-book-open fa-5x text-muted mb-4 opacity-50"></i>
+                    <h4 class="text-muted mb-3">No books currently borrowed</h4>
+                    <p class="text-muted mb-4">Time to find something great to read!</p>
+                    <a th:href="@{/member/books/browse}" class="btn btn-primary btn-lg px-5">
+                        Browse Books →
+                    </a>
+                </div>
+            </section>
+
+            <!-- Borrowing History -->
+            <section class="mb-5" th:if="${history != null and !history.isEmpty()}">
+                <h3 class="mb-4 fw-bold">Borrowing History</h3>
+                <div class="row g-4">
+                    <div class="col-12 col-sm-6 col-lg-4" th:each="borrow : ${history}">
+                        <div class="card book-card opacity-75">
+                            <img th:src="@{'/uploads/' + ${borrow.coverImage}}"
+                                 th:alt="${borrow.bookTitle}"
+                                 class="book-cover"
+                                 onerror="this.src='https://via.placeholder.com/400x600?text=No+Cover'">
+                            <div class="card-body d-flex flex-column p-4">
+                                <h5 class="card-title mb-3" th:text="${borrow.bookTitle}">Book Title</h5>
+                                <small class="text-success">
+                                    Returned on 
+                                    <span th:text="${#dates.format(borrow.returnAt, 'dd MMM yyyy')}">
+                                        01 Jan 2026
+                                    </span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Popular Books -->
+            <section>
+                <h3 class="mb-4 fw-bold">Popular Books Available Now</h3>
+                <div class="row g-4">
+                    <div class="col-6 col-md-4 col-lg-3" th:each="book : ${popularBooks}">
+                        <div class="card book-card text-center">
+                            <img th:src="@{'/uploads/' + ${book.coverImage}}"
+                                 th:alt="${book.title}"
+                                 class="book-cover"
+                                 onerror="this.src='https://via.placeholder.com/400x600?text=No+Cover'">
+                            <div class="card-body d-flex flex-column py-4">
+                                <h6 class="card-title mb-2" th:text="${book.title}">Educated</h6>
+                                <small class="text-muted mb-3" th:text="${book.author}">Tara Westover</small>
+
+                                <div class="mt-auto">
+                                    <span class="badge bg-success badge-available mb-3"
+                                          th:text="${book.availableCopies + ' available'}">3 available</span>
+
+                                    <button class="btn btn-primary btn-borrow w-100"
+                                            th:disabled="${book.availableCopies == 0}"
+                                            th:onclick="'borrowBook(' + ${book.id} + ')'">
+                                        <span th:if="${book.availableCopies > 0}">
+                                            <i class="fas fa-shopping-cart me-2"></i> Borrow Now
+                                        </span>
+                                        <span th:unless="${book.availableCopies > 0}">Unavailable</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
         </div>
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function borrowBook(bookId) {
-        if (confirm("Borrow this book?")) {
-            window.location.href = "/member/borrows/borrow/" + bookId;
+        if (confirm("Borrow this book now?")) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/member/borrows/borrow/' + bookId;
+            document.body.appendChild(form);
+            form.submit();
         }
     }
 </script>

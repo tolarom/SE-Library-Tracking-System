@@ -3,14 +3,15 @@ package project.library.demo.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import project.library.demo.entity.Book;
 import project.library.demo.entity.BorrowRecord;
 import project.library.demo.entity.User;
 import project.library.demo.repo.BookRepository;
 import project.library.demo.repo.BorrowRepository;
+import project.library.demo.repo.UserRepository;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,12 +24,19 @@ public class BorrowService {
     @Autowired
     private BookRepository bookRepository;
 
-    private static final int BORROW_DAYS = 14;
-    // Note: No fine system yet in entity → we'll skip fine calculation for now
+    @Autowired
+    private UserRepository userRepository;
 
-    // Borrow a book
+    private static final int BORROW_DAYS = 14;
+
+    // Borrow a book using IDs
     @Transactional
-    public void borrowBook(User member, Book book) {
+    public void borrowBookByIds(Long userId, Long bookId) {
+        User member = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
+
         if (book.getAvailableCopies() <= 0) {
             throw new RuntimeException("No copies available");
         }
@@ -38,7 +46,7 @@ public class BorrowService {
         record.setBookId(book.getId());
         record.setBorrowAt(Timestamp.valueOf(LocalDateTime.now()));
         record.setDueDate(Timestamp.valueOf(LocalDateTime.now().plusDays(BORROW_DAYS)));
-        record.setReturnAt(null);           // not returned yet
+        record.setReturnAt(null);
         record.setStatus("BORROWED");
         record.setOverdue(false);
 
@@ -49,7 +57,7 @@ public class BorrowService {
         bookRepository.save(book);
     }
 
-    // Return a book
+    // Return a book using borrow ID
     @Transactional
     public void returnBook(Long borrowId) {
         BorrowRecord record = borrowRepository.findById(borrowId)
@@ -62,7 +70,7 @@ public class BorrowService {
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         record.setReturnAt(now);
 
-        // Check if overdue
+        // Check overdue
         if (record.getDueDate().before(now)) {
             record.setOverdue(true);
             record.setStatus("OVERDUE_RETURNED");
@@ -79,44 +87,44 @@ public class BorrowService {
         bookRepository.save(book);
     }
 
-    // Get current borrows for a member (not returned)
-    public List<BorrowRecord> getCurrentBorrows(User member) {
-        return borrowRepository.findByUserIdAndReturnAtIsNull(member.getId());
+    // Get all borrows
+    public List<BorrowRecord> findAll() {
+        return borrowRepository.findAll();
     }
 
-    // Get full borrowing history for a member (newest first)
-    public List<BorrowRecord> getBorrowingHistory(User member) {
-        return borrowRepository.findByUserIdOrderByBorrowAtDesc(member.getId());
+    // Delete a borrow record
+    @Transactional
+    public void deleteById(Long borrowId) {
+        borrowRepository.deleteById(borrowId);
     }
 
-    // Get all currently overdue loans (system-wide)
-    public List<BorrowRecord> getAllOverdue() {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        return borrowRepository.findOverdueByUserId(null, now); // You'll need to adjust repo or write custom query
-        // Temporary workaround if method doesn't exist yet:
-        // return borrowRepository.findAllByReturnAtIsNullAndDueDateBefore(now);
+    // Get current borrows for a member
+    public List<BorrowRecord> getCurrentBorrows(Long userId) {
+        return borrowRepository.findByUserIdAndReturnAtIsNull(userId);
     }
 
-    // Get member's overdue count
-    public long getOverdueCount(User member) {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        // You'll need a repo method like countOverdueByUserId(Long userId, Timestamp today)
-        // For now, filter in memory (not ideal for large data)
-        return borrowRepository.findByUserIdAndReturnAtIsNull(member.getId()).stream()
-                .filter(r -> r.getDueDate().before(now))
-                .count();
+    // Get borrowing history
+    public List<BorrowRecord> getBorrowingHistory(Long userId) {
+        return borrowRepository.findByUserIdOrderByBorrowAtDesc(userId);
     }
 
-    // Get total active borrows (system-wide)
+   // In BorrowService.java
+    public List<BorrowRecord> findOverdueBorrows() {
+    LocalDate today = LocalDate.now();
+    return borrowRepository.findAllByReturnAtIsNullAndDueDateBefore(today);
+}
+    // Total active borrows
     public long getTotalActiveBorrows() {
         return borrowRepository.countByReturnAtIsNull();
     }
 
-    // Get total overdue count (system-wide)
-    public long getTotalOverdueCount() {
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        return borrowRepository.countOverdueLoans(now);
-    }
+    // Total overdue
+    // Get overdue count for a user by userId
+    public long getOverdueCount(Long userId) {
+    Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+    return borrowRepository.findByUserIdAndReturnAtIsNull(userId).stream()
+            .filter(r -> r.getDueDate().before(now))
+            .count();
+}
 
-    // Note: payFine() removed because no fineAmount/paid fields exist yet
 }

@@ -1,75 +1,98 @@
 package project.library.demo.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.security.access.annotation.Secured;
-
-import project.library.demo.entity.User;
-import project.library.demo.service.BookService;
+import project.library.demo.config.CustomUserDetails;
+import project.library.demo.dto.BorrowDTO;
+import project.library.demo.entity.Book;
+import project.library.demo.entity.BorrowRecord;
+import project.library.demo.repo.BookRepository;
 import project.library.demo.service.BorrowService;
-import project.library.demo.service.UserService;
+
+import java.util.List;
+
 @Controller
-@RequestMapping("/member")
-@Secured("ROLE_MEMBER")  // Only users with ROLE_MEMBER can access
 public class MemberController {
 
-    @Autowired
-    private UserService userService;
+    private final BorrowService borrowService;
+    private final BookRepository bookRepository;
 
-    @Autowired
-    private BorrowService borrowService;
-
-    @Autowired
-    private BookService bookService;
-
-    // Changed endpoint from /dashboard to /home
-    @GetMapping("/home")
-    public String home(Model model, Authentication auth) {
-        String username = auth.getName();
-        User member = userService.findByUsername(username);
-
-        if (member == null) {
-            throw new RuntimeException("Member not found: " + username);
-        }
-
-        // Load data for the member's dashboard (now home)
-        model.addAttribute("currentBorrows", borrowService.getCurrentBorrows(member));
-        model.addAttribute("overdueCount", borrowService.getOverdueCount(member));
-        model.addAttribute("member", member);
-
-        return "member/home";  // ← Make sure the template file is now: src/main/resources/templates/member/home.html
+    public MemberController(BorrowService borrowService, BookRepository bookRepository) {
+        this.borrowService = borrowService;
+        this.bookRepository = bookRepository;
     }
 
-    @GetMapping("/borrows/current")
-    public String currentBorrows(Model model, Authentication auth) {
-        User member = getCurrentMember(auth);
+    // Home page
+    @GetMapping("/member/home")
+    public String memberHome(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        if (userDetails == null) return "redirect:/login";
 
-        model.addAttribute("currentBorrows", borrowService.getCurrentBorrows(member));
-        model.addAttribute("member", member);
+        Long userId = userDetails.getId();
 
-        return "member/borrows-current";
+        List<BorrowDTO> currentDTOs = borrowService.getCurrentBorrows(userId).stream()
+                .map(this::toBorrowDTO).toList();
+        List<BorrowDTO> historyDTOs = borrowService.getBorrowingHistory(userId).stream()
+                .map(this::toBorrowDTO).toList();
+
+        model.addAttribute("currentBorrows", currentDTOs);
+        model.addAttribute("overdueCount", borrowService.getOverdueCount(userId));
+        model.addAttribute("history", historyDTOs);
+        model.addAttribute("currentPath", request.getRequestURI());
+
+        return "member/home";
     }
 
-    @GetMapping("/borrows/history")
-    public String borrowingHistory(Model model, Authentication auth) {
-        User member = getCurrentMember(auth);
+    // Current Borrows page
+    @GetMapping("/member/borrows/current")
+    public String currentBorrows(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        if (userDetails == null) return "redirect:/login";
 
-        model.addAttribute("history", borrowService.getBorrowingHistory(member));
-        model.addAttribute("member", member);
+        Long userId = userDetails.getId();
+
+        List<BorrowDTO> dtos = borrowService.getCurrentBorrows(userId).stream()
+                .map(this::toBorrowDTO).toList();
+
+        model.addAttribute("borrows", dtos);
+        model.addAttribute("currentPath", request.getRequestURI());
+
+        return "member/current-borrows";
+    }
+
+    // Borrowing History page
+    @GetMapping("/member/borrows/history")
+    public String borrowingHistory(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        if (userDetails == null) return "redirect:/login";
+
+        Long userId = userDetails.getId();
+
+        List<BorrowDTO> dtos = borrowService.getBorrowingHistory(userId).stream()
+                .map(this::toBorrowDTO).toList();
+
+        model.addAttribute("borrows", dtos);
+        model.addAttribute("currentPath", request.getRequestURI());
 
         return "member/borrows-history";
     }
 
-    private User getCurrentMember(Authentication auth) {
-        String username = auth.getName();
-        User member = userService.findByUsername(username);
-        if (member == null) {
-            throw new RuntimeException("Authenticated user not found in database: " + username);
-        }
-        return member;
+    private BorrowDTO toBorrowDTO(BorrowRecord borrow) {
+        Book book = bookRepository.findById(borrow.getBookId()).orElse(null);
+        String title = book != null ? book.getTitle() : "Unknown Book";
+        String cover = book != null && book.getCoverImage() != null
+                ? book.getCoverImage()
+                : "/images/default-cover.jpg";
+
+        return new BorrowDTO(
+                borrow.getId(),
+                title,
+                cover,
+                borrow.getBorrowAt(),
+                borrow.getDueDate(),
+                borrow.getReturnAt(),
+                borrow.getStatus(),
+                borrow.isOverdue()
+        );
     }
 }

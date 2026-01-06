@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .sidebar-link.active:hover i {
+            color: #0d6efd!important;
+        }
+</style>
+</head>
+<body>
+<th:block th:fragment="sidebaradmin">
+    <aside class="d-flex flex-column bg-white border-end shadow-sm" style="width: 250px; min-width: 250px; min-height: 100vh;">
+
+        <!-- Profile -->
+        <div class="text-center p-4 border-bottom">
+            <h3 class="fw-bold text-primary mb-2">Readly</h3>
+            <img src="https://via.placeholder.com/80" class="rounded-circle mb-2 shadow-sm" alt="Profile">
+            <h6 sec:authentication="name">User</h6>
+            <small class="text-muted">Library Librarian</small>
+        </div>
+
+        <!-- Menu -->
+        <nav class="flex-grow-1 py-3">
+            <div sec:authorize="hasRole('ADMIN')">
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" th:href="@{/dashboard}">
+                    <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                </a>
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" th:href="@{/admin/books}">
+                    <i class="fas fa-book me-2"></i> Manage Books
+                </a>
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" th:href="@{/admin/books/new}">
+                    <i class="fas fa-plus-circle me-2"></i> Add Book
+                </a>
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" th:href="@{/admin/borrows}">
+                    <i class="fas fa-exchange-alt me-2"></i> Borrow Records
+                </a>
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" th:href="@{/admin/users}">
+                    <i class="fas fa-users me-2"></i> Manage Members
+                </a>
+                <a class="sidebar-link d-flex align-items-center px-3 py-2 mb-1 rounded nav-link text-dark " th:href="@{/admin/users/new}">
+                <i class="fas fa-plus-circle me-3"></i> Add Member
+                </a>
+                <a class="sidebar-link d-flex align-items-center px-3 py-2 mb-1 rounded nav-link text-dark " th:href="@{/admin/borrows/new}">
+                <i class="fas fa-plus-circle me-3"></i> Add Borrow
+                </a>
+                
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="border-top p-3">
+            <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" th:href="@{/settings}">
+                <i class="fas fa-cog me-2"></i> Settings
+            </a>
+            <a class="d-flex align-items-center px-3 py-2 mb-1 text-danger rounded nav-link" th:href="@{/logout}">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </a>
+        </div>
+
+    </aside>
+</th:block>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

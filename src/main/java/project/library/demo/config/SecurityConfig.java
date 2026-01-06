@@ -109,7 +109,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
 
             // Member-accessible endpoints
             .requestMatchers(
-                "/member/dashboard", "/member/**",
+                "/member/**",
                 "/books",
                 "/borrow/**", "/return/**", "/myloans", "/profile"
             ).hasRole("MEMBER")

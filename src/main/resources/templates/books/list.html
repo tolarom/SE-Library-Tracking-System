@@ -35,26 +35,7 @@
 </head>
 <body class="bg-light">
 <div class="d-flex min-vh-100">
-
-    <!-- Sidebar (same as dashboard) -->
-    <aside class="bg-white border-end shadow-sm d-flex flex-column" style="width: 250px;">
-        <div class="p-4">
-            <h4 class="fw-bold mb-4 text-primary">Readly</h4>
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/dashboard}"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-                <a class="nav-link active fw-medium" th:href="@{/admin/books}"><i class="fas fa-book me-2"></i> Manage Books</a>
-                <a class="nav-link" th:href="@{/admin/books/new}"><i class="fas fa-plus-circle me-2"></i> Add Book</a>
-                <a class="nav-link" th:href="@{/admin/users}"><i class="fas fa-users me-2"></i> Manage Members</a>
-                <a class="nav-link" th:href="@{/admin/users/new}"><i class="fas fa-user-plus me-2"></i> Add Member</a>
-            </nav>
-        </div>
-        <div class="mt-auto p-4 border-top">
-            <nav class="nav flex-column">
-                <a class="nav-link" th:href="@{/settings}"><i class="fas fa-cog me-2"></i> Settings</a>
-                <a class="nav-link text-danger" th:href="@{/logout}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-            </nav>
-        </div>
-    </aside>
+    <div th:replace="~{fragments/sidebaradmin :: sidebaradmin}"></div>
 
     <!-- Main Content -->
     <main class="flex-grow-1 overflow-auto">
