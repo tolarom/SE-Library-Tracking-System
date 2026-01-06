@@ -95,6 +95,17 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                 "/static/**", "/resources/**", "/webjars/**", "/assets/**"
             ).permitAll()
 
+            // Librarian-only endpoints
+            .requestMatchers("/admin/**").hasRole("LIBRARIAN")
+
+            // Member-accessible endpoints
+            .requestMatchers(
+                "/member/dashboard", "/member/**",
+                "/books",
+                "/borrow/**", "/return/**", "/myloans", "/profile"
+            ).hasRole("MEMBER")
+
+            // Any other request requires authentication
             .anyRequest().authenticated()
         )
 

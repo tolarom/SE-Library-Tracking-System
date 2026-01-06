@@ -28,11 +28,11 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_MEMBER"));
 
         if (isAdmin) {
-            response.sendRedirect("/admin/dashboard"); // Admin dashboard
+            response.sendRedirect("/dashboard"); 
         } else if (isMember) {
-            response.sendRedirect("/member/dashboard"); // Member dashboard
+            response.sendRedirect("/member/home"); 
         } else {
-            response.sendRedirect("/login?error=true"); // fallback
+            response.sendRedirect("/login?error=true"); 
         }
     }
 }

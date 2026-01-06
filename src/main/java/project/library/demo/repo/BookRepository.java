@@ -8,6 +8,6 @@ import project.library.demo.entity.Book;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
-
+   long count();
     
 }

@@ -5,6 +5,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Controller
 public class PageController {
 
@@ -26,9 +28,7 @@ public class PageController {
         return "register";
     }
 
-    /**
-     * Redirects users to the appropriate dashboard based on their role
-     */
+     
     @GetMapping("/redirect-dashboard")
     public String redirectToDashboard(Authentication authentication) {
         boolean isLibrarian = authentication.getAuthorities().stream()
@@ -41,4 +41,7 @@ public class PageController {
             return "redirect:/member/home";   // Regular member portal
         }
     }
+   
+    
+
 }
