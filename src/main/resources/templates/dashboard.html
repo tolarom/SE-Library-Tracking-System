@@ -93,32 +93,8 @@
                 </div>
             </div>
 
-            <!-- Three Main Cards Row -->
+            <!-- Main Cards Row -->
             <div class="row g-4">
-                <!-- Recent Activity -->
-                <div class="col-lg-4 d-flex">
-                    <div class="card shadow-sm flex-fill h-100">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0">Recent Activity</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-unstyled mb-0">
-                                <th:block th:if="${recentActivity != null and !recentActivity.isEmpty()}">
-                                    <li class="d-flex align-items-center mb-3" th:each="activity : ${recentActivity}">
-                                        <i class="fas fa-circle text-success me-3" style="font-size: 0.5rem;"></i>
-                                        <div>
-                                            <div th:text="${activity.description}">Member borrowed book</div>
-                                            <small class="text-muted" th:text="${activity.time}">Just now</small>
-                                        </div>
-                                    </li>
-                                </th:block>
-                                <li class="text-center text-muted py-4" th:unless="${recentActivity != null and !recentActivity.isEmpty()}">
-                                    No recent activity
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Overdue Loans -->
                 <div class="col-lg-4 d-flex">
@@ -169,11 +145,11 @@
                                 <th:block th:if="${currentlyBorrowed != null and !currentlyBorrowed.isEmpty()}">
                                     <div class="d-flex gap-3" th:each="borrowed : ${currentlyBorrowed}">
                                         <img th:src="@{'/uploads/' + ${borrowed.coverImage}}" 
-                                             th:alt="${borrowed.title}"
+                                             th:alt="${borrowed.bookTitle}"
                                              class="borrowed-book-img"
                                              onerror="this.src='https://via.placeholder.com/60x90?text=No+Cover'">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1" th:text="${borrowed.title}">Book Title</h6>
+                                            <h6 class="mb-1" th:text="${borrowed.bookTitle}">Book Title</h6>
                                             <small class="text-muted" th:text="${borrowed.author}">Author</small>
                                             <div class="small text-danger mt-1" th:if="${borrowed.overdue}">
                                                 <strong th:text="${borrowed.overdueDays + ' days overdue'}">Overdue</strong>

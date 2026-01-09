@@ -70,6 +70,19 @@ public class BorrowController {
         return "redirect:/admin/borrows";
     }
 
+    // Handle "Return Book" action
+    @PostMapping("/return/{id}")
+    public String returnBook(@PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            borrowService.returnBook(id);
+            redirectAttributes.addFlashAttribute("success", "Book returned successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Cannot return book: " + e.getMessage());
+        }
+        return "redirect:/admin/borrows";
+    }
+
     // Delete a borrow record
     @GetMapping("/delete/{id}")
     public String deleteBorrow(@PathVariable Long id, RedirectAttributes redirectAttributes) {

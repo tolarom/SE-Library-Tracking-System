@@ -35,8 +35,8 @@ public class AdminController {
 
         DashboardStats stats = new DashboardStats();
         stats.setTotalBooks((int) bookRepository.count());
-        stats.setTotalMembers((int) userRepository.count()); // or count only members, not admins
-
+        stats.setTotalMembers((int) userRepository.count());
+        stats.setActiveBorrows((int) borrowRepository.count());
 
 
         model.addAttribute("stats", stats);
