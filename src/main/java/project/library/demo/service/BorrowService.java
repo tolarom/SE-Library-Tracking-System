@@ -34,6 +34,11 @@ public class BorrowService {
     public void borrowBookByIds(Long userId, Long bookId) {
         User member = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        if(!member.getRoles().equals("ROLE_MEMBER")) {
+            throw new RuntimeException("User is not a member");
+        }
+
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 

@@ -53,12 +53,7 @@ public class BorrowController {
     public String addBorrow(@ModelAttribute BorrowRecord borrowRecord,
                             RedirectAttributes redirectAttributes) {
         try {
-            // Set borrow date and due date
-            Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-            borrowRecord.setBorrowAt(now);
-            borrowRecord.setDueDate(Timestamp.valueOf(now.toLocalDateTime().plusDays(14)));
-            borrowRecord.setStatus("BORROWED");
-            borrowRecord.setOverdue(false);
+            
 
             // Save borrow record using IDs
             borrowService.borrowBookByIds(borrowRecord.getUserId(), borrowRecord.getBookId());
