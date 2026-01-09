@@ -115,3 +115,34 @@ The system now fully supports **role visibility, and editing**, enabling proper 
 
 **Result:**
 Librarian can now **return borrowed books directly from the borrow list**, improving borrow lifecycle management and overall usability.
+
+
+**Progress Report – Password Update & UI Fixes**
+
+* **User Management**
+
+  * Existing users can now **change their password**
+  * Secure flow: password change is **optional** when editing users
+  * Added toggle UI to show/hide password fields for better UX
+  * Confirm-password validation applied for both new and existing users
+
+* **MemberController**
+
+  * Fixed incorrect view mapping (`current-borrows` → `current-borrow`)
+  * Restored proper navigation for member pages
+
+* **Dashboard UI**
+
+  * Improved labels and wording for clarity (borrowed vs history)
+  * Cleaned layout and empty-state messages
+  * Better consistency between stats and displayed sections
+
+* **Users Form UI**
+
+  * Clear separation between **create user** and **edit user** flows
+  * New users: password required
+  * Existing users: password change via dedicated action
+  * Added interactive JS toggle for password update
+
+ **Result:**
+Librarian can now **safely update passwords for existing users**, member pages load correctly, and the dashboard UI is clearer and more user-friendly.
