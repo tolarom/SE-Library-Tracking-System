@@ -45,8 +45,18 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email *</label>
-                            <input type="email" class="form-control" th:field="*{email}" required/>
+                            <input type="email" class="form-control" th:field="*{email}"/>
                             <div class="text-danger mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Roles *</label>
+                            <select class="form-select" th:field="*{roles}" multiple="multiple" size="5" required>
+                                <option th:each="role : ${allRoles}"
+                                        th:value="${role.id}"
+                                        th:text="${role.name}">
+                                </option>
+                            </select>
+                            <div class="text-danger mt-1" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></div>
                         </div>
 <div th:if="${user.id == null}" class="col-md-6">
     <label class="form-label">Password *</label>

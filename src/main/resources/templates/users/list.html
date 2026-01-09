@@ -44,6 +44,7 @@
                                     <th>Full Name</th>
                                     <th>Username</th>
                                     <th>Email</th>
+                                    <th>Roles</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -53,7 +54,12 @@
                                     <td th:text="${user.fullName}">John Doe</td>
                                     <td th:text="${user.username}">johndoe</td>
                                     <td th:text="${user.email}">john@example.com</td>
-                               
+                                    <td>
+                                        <span th:each="role, iterStat : ${user.roles}" 
+                                            th:text="${role.name}" 
+                                            class="badge bg-primary me-1">MEMBER</span>
+                                        <span th:if="${#lists.isEmpty(user.roles)}" class="text-muted">No roles assigned</span>
+                                    </td>
                                     <td>
                                         <a th:href="@{'/admin/users/edit/' + ${user.id}}"
                                            class="btn btn-sm btn-outline-primary me-1">

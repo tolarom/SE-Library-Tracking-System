@@ -1,6 +1,7 @@
 package project.library.demo.entity;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -86,4 +87,16 @@ public class BorrowRecord {
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    public LocalDate getBorrowDateOnly() {
+        return borrowAt != null ? borrowAt.toLocalDateTime().toLocalDate() : null;
+    }
+
+    public LocalDate getDueDateOnly() {
+        return dueDate != null ? dueDate.toLocalDateTime().toLocalDate() : null;
+    }
+
+    public LocalDate getReturnDateOnly() {
+        return returnAt != null ? returnAt.toLocalDateTime().toLocalDate() : null;
+    }
 }

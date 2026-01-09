@@ -30,11 +30,11 @@ public class User implements UserDetails {  // ← VERY IMPORTANT
     private String email;
 
     // Relationship to Role
-    @ManyToMany(fetch = FetchType.EAGER)  // EAGER so roles are loaded on login
+    @ManyToMany(fetch = FetchType.EAGER)  
     @JoinTable(
-    name = "app_user_roles",               // ← table name in DB
-    joinColumns = @JoinColumn(name = "app_user_id"),  // ← column name in DB
-    inverseJoinColumns = @JoinColumn(name = "role_id") // ← this one is correct
+    name = "app_user_roles",              
+    joinColumns = @JoinColumn(name = "app_user_id"), 
+    inverseJoinColumns = @JoinColumn(name = "role_id") 
 )
     private Set<Role> roles = new HashSet<>();
 

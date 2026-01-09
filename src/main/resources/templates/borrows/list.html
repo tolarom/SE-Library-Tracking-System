@@ -46,15 +46,9 @@
                                 <td th:text="${borrow.user != null ? (borrow.user.fullName ?: borrow.user.username) : '—'}">Member Name</td>
 
                                 <!-- Fixed: Use #dates for java.sql.Timestamp / java.util.Date -->
-                                <td th:text="${borrow.borrowAt != null ? #dates.format(borrow.borrowAt, 'yyyy-MM-dd') : '-'}">
-                                    2026-01-01
-                                </td>
-                                <td th:text="${borrow.dueDate != null ? #dates.format(borrow.dueDate, 'yyyy-MM-dd') : '-'}">
-                                    2026-01-15
-                                </td>
-                                <td th:text="${borrow.returnAt != null ? #dates.format(borrow.returnAt, 'yyyy-MM-dd') : 'Not returned'}">
-                                    -
-                                </td>
+                                <td th:text="${borrow.borrowDateOnly != null ? borrow.borrowDateOnly : '-'}"></td>
+                                <td th:text="${borrow.dueDateOnly != null ? borrow.dueDateOnly : '-'}"></td>
+                                <td th:text="${borrow.returnDateOnly != null ? borrow.returnDateOnly : 'Not returned'}"></td>
 
                                 <td>
                                     <span class="badge"
