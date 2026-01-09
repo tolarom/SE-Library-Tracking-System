@@ -58,7 +58,7 @@ public class MemberController {
         model.addAttribute("borrows", dtos);
         model.addAttribute("currentPath", request.getRequestURI());
 
-        return "member/current-borrows";
+        return "member/current-borrow";
     }
 
     // Borrowing History page
