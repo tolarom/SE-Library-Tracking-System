@@ -3,9 +3,12 @@ package project.library.demo.entity;
 import java.sql.Timestamp;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 
@@ -68,4 +71,19 @@ public class BorrowRecord {
 
     public boolean isOverdue() { return overdue; }
     public void setOverdue(boolean overdue) { this.overdue = overdue; }
+    
+    @ManyToOne(fetch = FetchType.EAGER)           // ← important!
+    @JoinColumn(name = "book_id", insertable = false, updatable = false)
+    private Book book;
+
+    @ManyToOne(fetch = FetchType.EAGER)           // ← important!
+    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    private User user;
+
+    // getters & setters for book and user
+    public Book getBook() { return book; }
+    public void setBook(Book book) { this.book = book; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

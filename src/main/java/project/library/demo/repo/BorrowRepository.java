@@ -1,6 +1,8 @@
 package project.library.demo.repo;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import project.library.demo.entity.BorrowRecord;
 
@@ -26,4 +28,11 @@ public interface BorrowRepository extends JpaRepository<BorrowRecord, Long> {
 
     // Optional: overdue list for admin view
     List<BorrowRecord> findAllByReturnAtIsNullAndDueDateBefore(LocalDate now);
+
+    @Query("SELECT b FROM BorrowRecord b JOIN FETCH b.book JOIN FETCH b.user")
+    List<BorrowRecord> findAllWithBooksAndUsers();
+
+    // or even better with entity graph
+    @EntityGraph(attributePaths = {"book", "user"})
+    List<BorrowRecord> findAll();
 }

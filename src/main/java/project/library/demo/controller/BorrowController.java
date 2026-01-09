@@ -34,7 +34,7 @@ public class BorrowController {
     // Show all borrow records
     @GetMapping
     public String listBorrows(Model model) {
-        List<BorrowRecord> borrows = borrowService.findAll(); // use ID-based entity
+        List<BorrowRecord> borrows = borrowService.findAllWithBooksAndUsers();
         model.addAttribute("borrows", borrows);
         return "borrows/list";
     }

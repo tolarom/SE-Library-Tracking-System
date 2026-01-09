@@ -126,5 +126,9 @@ public class BorrowService {
             .filter(r -> r.getDueDate().before(now))
             .count();
 }
+    public List<BorrowRecord> findAllWithBooksAndUsers() {
+        // If you want to be explicit (especially with LAZY fetch later)
+        return borrowRepository.findAllWithBooksAndUsers();
+     }
 
 }

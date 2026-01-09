@@ -42,8 +42,8 @@
                             <!-- Rows with data -->
                             <tr th:each="borrow : ${borrows}" th:if="${borrows != null and !borrows.isEmpty()}">
                                 <td th:text="${borrow.id}">1</td>
-                                <td th:text="${borrow.bookId}">Book Title</td>
-                                <td th:text="${borrow.userId}">Member Name</td>
+                                <td th:text="${borrow.book != null ? borrow.book.title : '—'}">Book Title</td>
+                                <td th:text="${borrow.user != null ? (borrow.user.fullName ?: borrow.user.username) : '—'}">Member Name</td>
 
                                 <!-- Fixed: Use #dates for java.sql.Timestamp / java.util.Date -->
                                 <td th:text="${borrow.borrowAt != null ? #dates.format(borrow.borrowAt, 'yyyy-MM-dd') : '-'}">
