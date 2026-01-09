@@ -66,4 +66,52 @@ This make the user register into the app get the role of member.
 
   * Improved navigation using `history.back()` for better UX
 
-**Result:** Borrow listing is now stable, readable, and production-ready with proper entity relationships and error handling.
+
+* **User Management (Admin)**
+
+  * Users now **display roles** in the user list
+  * Admin can **add new members with roles**
+  * Admin can **edit existing users and update roles**
+  * Role selection enforced (at least one role required)
+
+* **UserController**
+
+  * Integrated `RoleService`
+  * Added role handling in create/edit flows
+  * Validation for roles and passwords
+
+* **Role System**
+
+  * Added `RoleService` for clean role retrieval
+  * Improved `Role` entity (`equals` / `hashCode`) for proper Set behavior
+  * `User ↔ Role` many-to-many relationship stabilized
+
+ **Result:**
+The system now fully supports **role visibility, and editing**, enabling proper role-based user management from the librarian panel.
+
+**Progress Report – Borrow Return Feature**
+
+* **BorrowController**
+
+  * Added **Return Book** action (`POST /admin/borrows/return/{id}`)
+  * Handles success and error cases with user feedback
+  * Enables marking a borrow record as returned
+
+* **Borrow List UI**
+
+  * Added **Return** button for active borrows
+  * Integrated return action directly in the borrow table
+  * Keeps delete action unchanged
+
+* **Admin Dashboard**
+
+  * Simplified dashboard layout
+  * Cleaned unused “Recent Activity” section
+  * Minor fixes to displayed book data bindings
+
+* **AdminController**
+
+  * Small adjustment to dashboard statistics handling
+
+**Result:**
+Librarian can now **return borrowed books directly from the borrow list**, improving borrow lifecycle management and overall usability.
