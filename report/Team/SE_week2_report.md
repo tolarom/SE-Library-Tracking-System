@@ -73,3 +73,69 @@
     
     * Registered JwtFilter in security filter chain.
 
+## Frontend Implementation (HTML + Thymeleaf)
+
+### Login Page
+
+**Technology Used:**
+
+* HTML
+* Thymeleaf Template Engine
+
+## LIBRARIAN
+### Dashbord
+![alt text](image.png)
+### Manage book 
+![alt text](image-1.png)
+### Add Book
+![alt text](image-2.png)
+### Manage Member
+![alt text](image-3.png)
+### Add Borrow
+![alt text](image-4.png)
+### Manage Borrow
+![alt text](image-5.png)
+---
+
+## 4. Role-Based Access Control (RBAC)
+
+### MEMBER Role
+
+**Access Permissions:**
+
+* View available books.
+* Borrow and return books.
+* View personal borrowing history.
+
+
+**Frontend Behavior:**
+
+* Thymeleaf conditionally displays MEMBER-only menus.
+* Restricted from accessing librarian management pages.
+
+---
+
+### LIBRARIAN Role
+
+**Access Permissions:**
+
+* Manage books (add, update, delete).
+* View all borrow records.
+* Manage members and borrowing status.
+
+**Frontend Behavior:**
+
+* Thymeleaf displays librarian dashboard and management features.
+* Protected routes accessible only to librarians.
+
+---
+
+##  Security Flow Summary
+
+1. User submits login form (HTML + Thymeleaf).
+2. Backend authenticates credentials.
+3. JWT token and role are returned.
+4. Frontend stores token for session usage.
+5. Thymeleaf templates render UI based on user role.
+
+
