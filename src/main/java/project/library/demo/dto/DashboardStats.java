@@ -4,7 +4,7 @@ public class DashboardStats {
     private int totalBooks;
     private int totalMembers;
     private int activeBorrows;
-    private int overdueBooks;
+    private int overdueBorrows;
     private int newMembersThisMonth;
     private int borrowsThisMonth;
 
@@ -18,8 +18,8 @@ public class DashboardStats {
     public int getActiveBorrows() { return activeBorrows; }
     public void setActiveBorrows(int activeBorrows) { this.activeBorrows = activeBorrows; }
 
-    public int getOverdueBooks() { return overdueBooks; }
-    public void setOverdueBooks(int overdueBooks) { this.overdueBooks = overdueBooks; }
+    public int getOverdueBorrows() { return overdueBorrows; }
+    public void setOverdueBorrows(int overdueBorrows) { this.overdueBorrows = overdueBorrows; }
 
     public int getNewMembersThisMonth() { return newMembersThisMonth; }
     public void setNewMembersThisMonth(int newMembersThisMonth) { this.newMembersThisMonth = newMembersThisMonth; }

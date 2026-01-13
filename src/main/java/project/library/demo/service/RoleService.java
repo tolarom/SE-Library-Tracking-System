@@ -6,6 +6,7 @@ import project.library.demo.entity.ERole;
 import project.library.demo.repo.RoleRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class RoleService {
@@ -21,6 +22,7 @@ public class RoleService {
     }
 
     public Role getRoleById(Long id) {
+        Objects.requireNonNull(id, "id");
         return roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
     }

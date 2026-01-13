@@ -2,39 +2,38 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <th:block th:fragment="sidebar">
-    <aside class="bg-white border-end shadow-sm d-flex flex-column" style="width: 250px;">
-        <div class="p-4 text-center border-bottom">
-            <h3 class="fw-bold text-primary mb-0">Readly</h3>
-            <hr class="my-3">
-            <img src="https://via.placeholder.com/80" class="rounded-circle mb-3" alt="Profile">
-            <h6 class="mb-0" sec:authentication="name">User</h6>
+    <aside class="d-flex flex-column bg-white border-end shadow-sm" style="width: 250px; min-width: 250px; min-height: 100vh;">
+        <div class="text-center p-4 border-bottom">
+            <h3 class="fw-bold text-primary mb-2">Readly</h3>
+            <h6 sec:authentication="name">User</h6>
             <small class="text-muted">Library Member</small>
         </div>
-        <nav class="flex-grow-1 px-3 py-4">
+
+        <nav class="flex-grow-1 py-3">
             <div sec:authorize="hasRole('MEMBER')">
-                <a class="nav-link px-3 py-2 rounded mb-1 d-flex align-items-center" 
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" 
                    th:href="@{/member/home}"
-                   th:classappend="${currentPath == '/member/home'} ? 'active bg-primary text-white' : 'text-dark'">
+                   th:classappend="${currentPath == '/member/home'} ? 'active bg-primary text-white' : ''">
                     <i class="fas fa-home me-3"></i> My Home
                 </a>
 
-                <a class="nav-link px-3 py-2 rounded mb-1 d-flex align-items-center" 
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" 
                    th:href="@{/member/borrows/current}"
-                   th:classappend="${currentPath == '/member/borrows/current'} ? 'active bg-primary text-white' : 'text-dark'">
+                   th:classappend="${currentPath == '/member/borrows/current'} ? 'active bg-primary text-white' : ''">
                     <i class="fas fa-book-reader me-3"></i> Current Borrows
                 </a>
 
-                <a class="nav-link px-3 py-2 rounded mb-1 d-flex align-items-center" 
+                <a class="d-flex align-items-center px-3 py-2 mb-1 text-dark rounded nav-link" 
                    th:href="@{/member/borrows/history}"
-                   th:classappend="${currentPath == '/member/borrows/history'} ? 'active bg-primary text-white' : 'text-dark'">
+                   th:classappend="${currentPath == '/member/borrows/history'} ? 'active bg-primary text-white' : ''">
                     <i class="fas fa-history me-3"></i> Borrowing History
                 </a>
             </div>
         </nav>
 
-        <div class="border-top p-4">
-            <a class="nav-link text-danger px-3 py-2 rounded d-flex align-items-center" th:href="@{/logout}">
-                <i class="fas fa-sign-out-alt me-3"></i> Logout
+        <div class="border-top p-3">
+            <a class="d-flex align-items-center px-3 py-2 mb-1 text-danger rounded nav-link" th:href="@{/logout}">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
             </a>
         </div>
     </aside>

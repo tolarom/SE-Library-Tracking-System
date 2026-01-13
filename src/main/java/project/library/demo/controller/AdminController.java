@@ -9,8 +9,8 @@ import project.library.demo.repo.BookRepository;
 import project.library.demo.repo.BorrowRepository;
 import project.library.demo.repo.UserRepository;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 
 @Controller
 public class AdminController {
@@ -36,8 +36,8 @@ public class AdminController {
         DashboardStats stats = new DashboardStats();
         stats.setTotalBooks((int) bookRepository.count());
         stats.setTotalMembers((int) userRepository.count());
-        stats.setActiveBorrows((int) borrowRepository.count());
-
+        stats.setActiveBorrows((int) borrowRepository.countByReturnAtIsNull());
+        stats.setOverdueBorrows((int) borrowRepository.countByReturnAtIsNullAndDueDateBefore(Timestamp.valueOf(LocalDateTime.now())));
 
         model.addAttribute("stats", stats);
 

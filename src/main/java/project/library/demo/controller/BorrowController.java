@@ -6,8 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import project.library.demo.entity.BorrowRecord;
-import project.library.demo.entity.Book;
-import project.library.demo.entity.User;
 import project.library.demo.service.BookService;
 import project.library.demo.service.BorrowService;
 import project.library.demo.service.UserService;
@@ -24,7 +22,6 @@ public class BorrowController {
     private final BookService bookService;
     private final UserService userService;
 
-    @Autowired
     public BorrowController(BorrowService borrowService, BookService bookService, UserService userService) {
         this.borrowService = borrowService;
         this.bookService = bookService;
@@ -44,7 +41,7 @@ public class BorrowController {
     public String showBorrowForm(Model model) {
         model.addAttribute("borrowRecord", new BorrowRecord());
         model.addAttribute("books", bookService.findAll());
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userService.getAllMembers());
         return "borrows/form";
     }
 
@@ -54,6 +51,12 @@ public class BorrowController {
                             RedirectAttributes redirectAttributes) {
         try {
             
+            // Set borrow date and due date
+            Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+            borrowRecord.setBorrowAt(now);
+            borrowRecord.setDueDate(Timestamp.valueOf(now.toLocalDateTime().plusDays(14)));
+            borrowRecord.setStatus("BORROWED");
+            borrowRecord.setOverdue(false);
 
             // Save borrow record using IDs
             borrowService.borrowBookByIds(borrowRecord.getUserId(), borrowRecord.getBookId());

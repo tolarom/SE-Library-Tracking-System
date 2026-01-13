@@ -15,9 +15,11 @@
             padding: 1.5rem;
             text-align: center;
             transition: transform 0.2s;
+            cursor: pointer;
         }
         .stat-card:hover {
             transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
         .stat-icon {
             width: 60px;
@@ -64,107 +66,42 @@
             <!-- Stats Cards -->
             <div class="row g-4 mb-5">
                 <div class="col-md-3 col-6 d-flex">
-                    <div class="stat-card flex-fill d-flex flex-column justify-content-center">
-                        <div class="stat-icon borrowed"><i class="fas fa-book-open"></i></div>
-                        <h4 class="mb-0" th:text="${stats.activeBorrows} ?: 0">0</h4>
-                        <p class="text-muted mb-0">Borrowed History</p>
-                    </div>
+                    <a th:href="@{/admin/borrows}" class="text-decoration-none flex-fill">
+                        <div class="stat-card flex-fill d-flex flex-column justify-content-center">
+                            <div class="stat-icon borrowed"><i class="fas fa-book-open"></i></div>
+                            <h4 class="mb-0" th:text="${stats.activeBorrows} ?: 0">0</h4>
+                            <p class="text-muted mb-0">Active Borrows</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-md-3 col-6 d-flex">
-                    <div class="stat-card flex-fill d-flex flex-column justify-content-center">
-                        <div class="stat-icon overdue"><i class="fas fa-exclamation-triangle"></i></div>
-                        <h4 class="mb-0 text-danger" th:text="${stats.overdueBooks} ?: 0">0</h4>
-                        <p class="text-muted mb-0">Overdue Books</p>
-                    </div>
+                    <a th:href="@{/admin/borrows}" class="text-decoration-none flex-fill">
+                        <div class="stat-card flex-fill d-flex flex-column justify-content-center">
+                            <div class="stat-icon overdue"><i class="fas fa-exclamation-triangle"></i></div>
+                            <h4 class="mb-0 text-danger" th:text="${stats.overdueBorrows} ?: 0">0</h4>
+                            <p class="text-muted mb-0">Overdue Books</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-md-3 col-6 d-flex">
-                    <div class="stat-card flex-fill d-flex flex-column justify-content-center">
-                        <div class="stat-icon books"><i class="fas fa-books"></i></div>
-                        <h4 class="mb-0" th:text="${stats.totalBooks} ?: 0">0</h4>
-                        <p class="text-muted mb-0">Total Books</p>
-                    </div>
+                    <a th:href="@{/admin/books}" class="text-decoration-none flex-fill">
+                        <div class="stat-card flex-fill d-flex flex-column justify-content-center">
+                            <div class="stat-icon books"><i class="fas fa-book-open"></i></div>
+                            <h4 class="mb-0" th:text="${stats.totalBooks} ?: 0">0</h4>
+                            <p class="text-muted mb-0">Total Books</p>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-md-3 col-6 d-flex">
-                    <div class="stat-card flex-fill d-flex flex-column justify-content-center">
-                        <div class="stat-icon members"><i class="fas fa-users"></i></div>
-                        <h4 class="mb-0" th:text="${stats.totalMembers} ?: 0">0</h4>
-                        <p class="text-muted mb-0">Active Members</p>
-                    </div>
+                    <a th:href="@{/admin/users}" class="text-decoration-none flex-fill">
+                        <div class="stat-card flex-fill d-flex flex-column justify-content-center">
+                            <div class="stat-icon members"><i class="fas fa-users"></i></div>
+                            <h4 class="mb-0" th:text="${stats.totalMembers} ?: 0">0</h4>
+                            <p class="text-muted mb-0">Active Members</p>
+                        </div>
+                    </a>
                 </div>
             </div>
-
-            <!-- Main Cards Row -->
-            <div class="row g-4">
-
-                <!-- Overdue Loans -->
-                <div class="col-lg-4 d-flex">
-                    <div class="card shadow-sm flex-fill h-100">
-                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">Overdue Book Loans</h5>
-                            <a href="/admin/borrows" class="text-primary small fw-medium">See All →</a>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Member</th>
-                                            <th>Title</th>
-                                            <th>Overdue</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <th:block th:if="${overdueLoans != null and !overdueLoans.isEmpty()}">
-                                            <tr th:each="loan : ${overdueLoans}">
-                                                <td th:text="${loan.memberName}">Member Name</td>
-                                                <td th:text="${loan.bookTitle}">Book Title</td>
-                                                <td><span class="badge bg-danger" th:text="${loan.overdueDays + ' days'}">X days</span></td>
-                                            </tr>
-                                        </th:block>
-                                        <tr th:unless="${overdueLoans != null and !overdueLoans.isEmpty()}">
-                                            <td colspan="3" class="text-center py-4 text-muted">No overdue loans 🎉</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  Borrowed History Books -->
-                <div class="col-lg-4 d-flex">
-                    <div class="card shadow-sm flex-fill h-100">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0">
-                                 Borrowed History
-                                <span class="badge bg-warning text-dark" th:text="${stats.activeBorrows} ?: 0">0</span>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex flex-column gap-3">
-                                <th:block th:if="${currentlyBorrowed != null and !currentlyBorrowed.isEmpty()}">
-                                    <div class="d-flex gap-3" th:each="borrowed : ${currentlyBorrowed}">
-                                        <img th:src="@{'/uploads/' + ${borrowed.coverImage}}" 
-                                             th:alt="${borrowed.bookTitle}"
-                                             class="borrowed-book-img"
-                                             onerror="this.src='https://via.placeholder.com/60x90?text=No+Cover'">
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1" th:text="${borrowed.bookTitle}">Book Title</h6>
-                                            <small class="text-muted" th:text="${borrowed.author}">Author</small>
-                                            <div class="small text-danger mt-1" th:if="${borrowed.overdue}">
-                                                <strong th:text="${borrowed.overdueDays + ' days overdue'}">Overdue</strong>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </th:block>
-                                <div class="text-center text-muted py-4" th:unless="${currentlyBorrowed != null and !currentlyBorrowed.isEmpty()}">
-                                    No books borrowed History 🎉
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- end row -->
         </div>
     </main>
 </div>

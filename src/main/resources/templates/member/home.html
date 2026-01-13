@@ -97,7 +97,7 @@
                 <h3 class="mb-4 fw-bold">Currently Borrowed Books</h3>
 
                 <!-- Borrowed Books Grid -->
-                <div class="row g-4" th:if="${currentBorrows != null and !currentBorrows.isEmpty()}">
+                <div class="row" th:if="${currentBorrows != null and !currentBorrows.isEmpty()}">
                     <!-- Responsive columns: 1 on mobile, 2 on tablet, 3 on desktop -->
                     <div class="col-12 col-sm-6 col-lg-4" th:each="borrow : ${currentBorrows}">
                         <div class="card book-card">
@@ -133,17 +133,13 @@
                      th:if="${currentBorrows == null or currentBorrows.isEmpty()}">
                     <i class="fas fa-book-open fa-5x text-muted mb-4 opacity-50"></i>
                     <h4 class="text-muted mb-3">No books currently borrowed</h4>
-                    <p class="text-muted mb-4">Time to find something great to read!</p>
-                    <a th:href="@{/member/books/browse}" class="btn btn-primary btn-lg px-5">
-                        Browse Books →
-                    </a>
                 </div>
             </section>
 
             <!-- Borrowing History -->
             <section class="mb-5" th:if="${history != null and !history.isEmpty()}">
                 <h3 class="mb-4 fw-bold">Borrowing History</h3>
-                <div class="row g-4">
+                <div class="row">
                     <div class="col-12 col-sm-6 col-lg-4" th:each="borrow : ${history}">
                         <div class="card book-card opacity-75">
                             <img th:src="@{'/uploads/' + ${borrow.coverImage}}"
@@ -158,39 +154,6 @@
                                         01 Jan 2026
                                     </span>
                                 </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Popular Books -->
-            <section>
-                <h3 class="mb-4 fw-bold">Popular Books Available Now</h3>
-                <div class="row g-4">
-                    <div class="col-6 col-md-4 col-lg-3" th:each="book : ${popularBooks}">
-                        <div class="card book-card text-center">
-                            <img th:src="@{'/uploads/' + ${book.coverImage}}"
-                                 th:alt="${book.title}"
-                                 class="book-cover"
-                                 onerror="this.src='https://via.placeholder.com/400x600?text=No+Cover'">
-                            <div class="card-body d-flex flex-column py-4">
-                                <h6 class="card-title mb-2" th:text="${book.title}">Educated</h6>
-                                <small class="text-muted mb-3" th:text="${book.author}">Tara Westover</small>
-
-                                <div class="mt-auto">
-                                    <span class="badge bg-success badge-available mb-3"
-                                          th:text="${book.availableCopies + ' available'}">3 available</span>
-
-                                    <button class="btn btn-primary btn-borrow w-100"
-                                            th:disabled="${book.availableCopies == 0}"
-                                            th:onclick="'borrowBook(' + ${book.id} + ')'">
-                                        <span th:if="${book.availableCopies > 0}">
-                                            <i class="fas fa-shopping-cart me-2"></i> Borrow Now
-                                        </span>
-                                        <span th:unless="${book.availableCopies > 0}">Unavailable</span>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

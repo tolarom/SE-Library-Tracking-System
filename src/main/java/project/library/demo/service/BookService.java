@@ -1,8 +1,6 @@
 package project.library.demo.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
+import java.util.Objects;
 
 
 @Service
@@ -39,6 +38,7 @@ public class BookService {
      * Get a book by ID (used in Thymeleaf templates)
      */
     public Book getBookById(Long bookId) {
+        Objects.requireNonNull(bookId, "bookId");
         return bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found: " + bookId));
     }
@@ -83,11 +83,13 @@ public class BookService {
     }
 
     public Book findById(Long id) {
+        Objects.requireNonNull(id, "id");
         return bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found: " + id));
     }
 
     public Book update(Long id, Book updatedBook, MultipartFile coverFile) throws IOException {
+        Objects.requireNonNull(id, "id");
         Book book = findById(id);
 
         book.setTitle(updatedBook.getTitle());
@@ -107,6 +109,7 @@ public class BookService {
     }
 
     public void delete(Long id) {
+        Objects.requireNonNull(id, "id");
         bookRepository.deleteById(id);
     }
 }

@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class BorrowService {
@@ -32,12 +33,15 @@ public class BorrowService {
     // Borrow a book using IDs
     @Transactional
     public void borrowBookByIds(Long userId, Long bookId) {
+        Objects.requireNonNull(userId, "userId");
+        Objects.requireNonNull(bookId, "bookId");
+
         User member = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         
-        if(!member.getRoles().equals("ROLE_MEMBER")) {
-            throw new RuntimeException("User is not a member");
-        }
+        // if(!member.getRoles().equals("ROLE_MEMBER")) {
+        //     throw new RuntimeException("User is not a member");
+        // }
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
@@ -65,6 +69,8 @@ public class BorrowService {
     // Return a book using borrow ID
     @Transactional
     public void returnBook(Long borrowId) {
+        Objects.requireNonNull(borrowId, "borrowId");
+
         BorrowRecord record = borrowRepository.findById(borrowId)
                 .orElseThrow(() -> new RuntimeException("Borrow record not found"));
 
@@ -100,22 +106,25 @@ public class BorrowService {
     // Delete a borrow record
     @Transactional
     public void deleteById(Long borrowId) {
+        Objects.requireNonNull(borrowId, "borrowId");
         borrowRepository.deleteById(borrowId);
     }
 
     // Get current borrows for a member
     public List<BorrowRecord> getCurrentBorrows(Long userId) {
+        Objects.requireNonNull(userId, "userId");
         return borrowRepository.findByUserIdAndReturnAtIsNull(userId);
     }
 
     // Get borrowing history
     public List<BorrowRecord> getBorrowingHistory(Long userId) {
+        Objects.requireNonNull(userId, "userId");
         return borrowRepository.findByUserIdOrderByBorrowAtDesc(userId);
     }
 
    // In BorrowService.java
     public List<BorrowRecord> findOverdueBorrows() {
-    LocalDate today = LocalDate.now();
+    Timestamp today = Timestamp.valueOf(LocalDateTime.now());
     return borrowRepository.findAllByReturnAtIsNullAndDueDateBefore(today);
 }
     // Total active borrows
@@ -126,11 +135,12 @@ public class BorrowService {
     // Total overdue
     // Get overdue count for a user by userId
     public long getOverdueCount(Long userId) {
-    Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-    return borrowRepository.findByUserIdAndReturnAtIsNull(userId).stream()
-            .filter(r -> r.getDueDate().before(now))
-            .count();
-}
+        Objects.requireNonNull(userId, "userId");
+        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+        return borrowRepository.findByUserIdAndReturnAtIsNull(userId).stream()
+                .filter(r -> r.getDueDate().before(now))
+                .count();
+    }
     public List<BorrowRecord> findAllWithBooksAndUsers() {
         // If you want to be explicit (especially with LAZY fetch later)
         return borrowRepository.findAllWithBooksAndUsers();

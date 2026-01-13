@@ -6,6 +6,7 @@ import project.library.demo.entity.User;
 import project.library.demo.repo.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -26,19 +27,26 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
+        Objects.requireNonNull(id, "id");
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public void saveUser(User user) {
+        Objects.requireNonNull(user, "user");
         userRepository.save(user);
     }
 
     public void deleteUser(Long id) {
+        Objects.requireNonNull(id, "id");
         userRepository.deleteById(id);
     }
 
     public long countMembers() {
-        return userRepository.count();
+        return userRepository.countMembers();
+    }
+
+    public List<User> getAllMembers() {
+        return userRepository.findAllMembers();
     }
 }

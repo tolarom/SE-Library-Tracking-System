@@ -1,17 +1,23 @@
 package project.library.demo.repo;
 
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import project.library.demo.entity.User;
 
-public interface UserRepository extends org.springframework.data.jpa.repository.JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
-    //long countByRolesContaining(String role); // or however you store members
-
-   // long countByCreatedAtAfter(LocalDateTime startOfMonth); // new members this month
-
+    
+    // Get members only (users with MEMBER role)
+    @Query("SELECT u FROM User u JOIN u.roles r WHERE r.name = 'MEMBER'")
+    List<User> findAllMembers();
+    
+    // Count members only
+    @Query("SELECT COUNT(u) FROM User u JOIN u.roles r WHERE r.name = 'MEMBER'")
+    long countMembers();
 }

@@ -78,11 +78,13 @@ public class MemberController {
     }
 
     private BorrowDTO toBorrowDTO(BorrowRecord borrow) {
-        Book book = bookRepository.findById(borrow.getBookId()).orElse(null);
+        Long bookId = borrow.getBookId();
+        Book book = (bookId != null) ? bookRepository.findById(bookId).orElse(null) : null;
+
         String title = book != null ? book.getTitle() : "Unknown Book";
         String cover = book != null && book.getCoverImage() != null
-                ? book.getCoverImage()
-                : "/images/default-cover.jpg";
+            ? book.getCoverImage()
+            : "/images/default-cover.jpg";
 
         return new BorrowDTO(
                 borrow.getId(),
