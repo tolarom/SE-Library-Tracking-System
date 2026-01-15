@@ -1,0 +1,84 @@
+@startuml LoginActivity
+!theme plain
+title Library Management System - Registration & Role-Based Login
+
+start
+:User Opens Library Management System;
+
+if (Has Account?) then (No)
+  '========================
+  ' Registration Flow
+  '========================
+  :Navigate to Registration Page;
+  :Enter Full Name;
+  :Enter Email Address;
+  :Enter Password;
+  :Confirm Password;
+  :Default Role as Member;
+  
+  :System Validates Input;
+  
+  if (Email Already Exists?) then (Yes)
+    :Display Error Message;
+    :Redirect to Registration Page;
+    stop
+  else (No)
+    :Create User Account in Database;
+    :Display Success Message;
+    :Redirect to Login Page;
+  endif
+else (Yes)
+endif
+
+'========================
+' Login Flow
+'========================
+:Navigate to Login Page;
+:Enter Email and Password;
+
+:System Validates Credentials;
+
+if (Credentials Valid?) then (No)
+  :Display Error Message;
+  :Redirect to Login Page;
+  stop
+else (Yes)
+  :Retrieve User Role from Database;
+  
+  if (User Role?) then (Librarian)
+    :Redirect to Librarian Dashboard;
+    :Display Librarian Menu;
+    
+    split
+       :Manage Books;
+       :Add/Edit/Delete Books;
+    split again
+       :Create Borrow;
+       :Record member borrow;
+    split again
+       :Process Returns;
+       :Update status;
+    split again
+       :Manage Users;
+       :Add/Edit/Delete Users;
+    end split
+
+  else (Member)
+    :Redirect to Member Dashboard;
+    :Display Member Menu;
+    
+    split
+       :Current Borrows;
+       :Check Due Dates;
+    split again
+       :View History;
+       :View Past Returns;
+    end split
+  endif
+  
+  :Log out;
+  :Session Ended Successfully;
+endif
+
+stop
+@enduml

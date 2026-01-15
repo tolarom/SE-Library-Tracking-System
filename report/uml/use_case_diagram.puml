@@ -1,0 +1,59 @@
+@startuml UseCaseDiagram
+!theme plain
+skinparam maxMessageSize 400
+scale 1.3
+
+title Library Management System - Use Case Diagram
+
+left to right direction 
+
+actor "Member" as member
+actor "Librarian" as librarian
+
+rectangle "Library Management System" {
+    usecase "Register Account" as UC1
+    usecase "Login" as UC2
+    usecase "View Available Books" as UC5
+    usecase "Manage Borrow Book" as UC7
+    usecase "Manage Return Book" as UC8
+    usecase "View Borrow History" as UC9
+    usecase "View Current Borrows" as UC10
+    usecase "Check Due Dates" as UC11
+    usecase "Manage Books" as UC13
+    usecase "Add Book" as UC13A
+    usecase "Edit Book" as UC13B
+    usecase "Delete Book" as UC13C
+    usecase "Manage Users" as UC14
+    usecase "Add User" as UC14A
+    usecase "Edit User" as UC14B
+    usecase "Delete User" as UC14C
+    usecase "Process Overdue Books" as UC16
+    usecase "Logout" as UC19
+}
+
+member --> UC1
+member --> UC2
+member --> UC9
+member --> UC10
+member --> UC11
+member --> UC19
+
+librarian --> UC2
+librarian --> UC5
+librarian --> UC7
+librarian --> UC8
+librarian --> UC13
+librarian --> UC16
+librarian --> UC19
+librarian --> UC14
+
+UC13 <.. UC13A : includes
+UC13 <.. UC13B : includes
+UC13 <.. UC13C : includes
+
+UC14 <.. UC14A : includes
+UC14 <.. UC14B : includes
+UC14 <.. UC14C : includes
+
+
+@enduml
