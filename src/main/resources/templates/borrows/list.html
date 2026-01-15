@@ -61,7 +61,8 @@
                                           th:action="@{|/admin/borrows/return/${borrow.id}|}"
                                           method="post"
                                           style="display:inline;">
-                                        <button type="submit" class="btn btn-sm btn-primary">
+                                        <button type="submit" class="btn btn-sm btn-primary"
+                                        onclick="return confirm('Are you sure you want to return this borrow record?')">
                                             <i class="fas fa-undo me-1"></i> Return
                                         </button>
                                     </form>
